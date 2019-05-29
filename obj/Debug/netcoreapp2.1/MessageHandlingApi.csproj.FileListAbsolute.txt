@@ -1,0 +1,14 @@
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\bin\Debug\netcoreapp2.1\MessageHandlingApi.deps.json
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\bin\Debug\netcoreapp2.1\MessageHandlingApi.runtimeconfig.json
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\bin\Debug\netcoreapp2.1\MessageHandlingApi.runtimeconfig.dev.json
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\bin\Debug\netcoreapp2.1\MessageHandlingApi.dll
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\bin\Debug\netcoreapp2.1\MessageHandlingApi.pdb
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\obj\Debug\netcoreapp2.1\MessageHandlingApi.csprojAssemblyReference.cache
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\obj\Debug\netcoreapp2.1\MessageHandlingApi.csproj.CoreCompileInputs.cache
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\obj\Debug\netcoreapp2.1\MessageHandlingApi.RazorAssemblyInfo.cache
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\obj\Debug\netcoreapp2.1\MessageHandlingApi.RazorAssemblyInfo.cs
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\obj\Debug\netcoreapp2.1\MessageHandlingApi.AssemblyInfoInputs.cache
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\obj\Debug\netcoreapp2.1\MessageHandlingApi.AssemblyInfo.cs
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\obj\Debug\netcoreapp2.1\MessageHandlingApi.RazorTargetAssemblyInfo.cache
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\obj\Debug\netcoreapp2.1\MessageHandlingApi.dll
+C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\obj\Debug\netcoreapp2.1\MessageHandlingApi.pdb
