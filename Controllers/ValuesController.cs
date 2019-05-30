@@ -2,7 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using Microsoft.Extensions.Options;
+using MessageHandlingApi.Models;
 
 namespace MessageHandlingApi.Controllers
 {
@@ -10,6 +16,11 @@ namespace MessageHandlingApi.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        public class AppSettings
+        {
+            public string Secret { get; set; }
+        }
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
@@ -32,15 +43,17 @@ namespace MessageHandlingApi.Controllers
                 new Account { Username = "test", Password = "test" } 
             };
 
-            var user = _users.SingleOrDefault(x => x.Username == username && x.Password == password);
+            var user = _users.SingleOrDefault(x => x.Username == acc.Username && x.Password == acc.Password);
 
             // return null if user not found
             if (user == null)
-                return null;
+               return BadRequest(new { message = "Wrong login details" });
 
             // authentication successful so generate jwt token
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            // Secret for generating JWT tokens
+            string secret = "WhatsApp";
+            var key = Encoding.ASCII.GetBytes(secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[] 
@@ -56,7 +69,7 @@ namespace MessageHandlingApi.Controllers
             // remove password before returning
             user.Password = null;
 
-            return user;
+            return Ok (user);
         }
 
         // POST api/values
