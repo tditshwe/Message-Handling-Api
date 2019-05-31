@@ -8,19 +8,16 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
 using MessageHandlingApi.Models;
 
 namespace MessageHandlingApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        public class AppSettings
-        {
-            public string Secret { get; set; }
-        }
-
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
@@ -35,6 +32,7 @@ namespace MessageHandlingApi.Controllers
             return "value";
         }
 
+        [AllowAnonymous]
         [HttpPost("AuthenticateAccount")]
         public IActionResult Authenticate([FromBody] Account acc)
         {
