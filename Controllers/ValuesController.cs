@@ -10,6 +10,10 @@ using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using MessageHandlingApi.Models;
+// Hashing password
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Identity;
 
 namespace MessageHandlingApi.Controllers
 {
@@ -38,10 +42,14 @@ namespace MessageHandlingApi.Controllers
         {
             List<Account> _users = new List<Account>
             { 
-                new Account { Username = "test", Password = "test" } 
+                new Account { Username = "test", Password = "AQAAAAEAACcQAAAAENpksZoNlEQuaqB1jqucxHM5hFGYjYqtslvuBzxn3VbbbCxNB3gvKCUgipxHxVKh7A==" } 
             };
 
-            var user = _users.SingleOrDefault(x => x.Username == acc.Username && x.Password == acc.Password);
+            PasswordHasher<Account> hasher = new PasswordHasher<Account>();      
+
+            var user = _users.SingleOrDefault(x => x.Username == acc.Username && hasher.VerifyHashedPassword(x, x.Password, acc.Password) == PasswordVerificationResult.Success);
+
+            //string hashed = hasher.HashPassword(user, "test");
 
             // return null if user not found
             if (user == null)
@@ -50,7 +58,7 @@ namespace MessageHandlingApi.Controllers
             // authentication successful so generate jwt token
             var tokenHandler = new JwtSecurityTokenHandler();
             // Secret for generating JWT tokens
-            string secret = "WhatsApp";
+            string secret = "WhatsApp Messenger";
             var key = Encoding.ASCII.GetBytes(secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -58,7 +66,8 @@ namespace MessageHandlingApi.Controllers
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                //Token expires after a day
+                Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);

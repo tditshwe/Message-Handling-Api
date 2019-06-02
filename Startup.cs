@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace MessageHandlingApi
@@ -47,7 +48,7 @@ namespace MessageHandlingApi
             });
 
             // configure jwt authentication
-            var key = Encoding.ASCII.GetBytes("WhatsApp");
+            var key = Encoding.ASCII.GetBytes("WhatsApp Messenger");
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -66,7 +67,7 @@ namespace MessageHandlingApi
                 };
             });
 
-            // configure DI for application services
+            //configure DI for application services
             //services.AddScoped<IUserService, UserService>();
         }
 
@@ -91,9 +92,10 @@ namespace MessageHandlingApi
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Message Handling API V1");
                 c.RoutePrefix = string.Empty;
+                //c.DocExpansion(DocExpansion.None);
             });
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             // global cors policy
             app.UseCors(x => x
