@@ -10,9 +10,6 @@ using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using MessageHandlingApi.Models;
-// Hashing password
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Identity;
 
 namespace MessageHandlingApi.Controllers
@@ -42,14 +39,13 @@ namespace MessageHandlingApi.Controllers
         {
             List<Account> _users = new List<Account>
             { 
-                new Account { Username = "test", Password = "AQAAAAEAACcQAAAAENpksZoNlEQuaqB1jqucxHM5hFGYjYqtslvuBzxn3VbbbCxNB3gvKCUgipxHxVKh7A==" } 
+                new Account { Username = "test", Password = "AQAAAAEAACcQAAAAENpksZoNlEQuaqB1jqucxHM5hFGYjYqtslvuBzxn3VbbbCxNB3gvKCUgipxHxVKh7A==", Role = "User" },
+                new Account { Username = "admin", Password = "AQAAAAEAACcQAAAAEDbBKQo/fKTlpqYA/1/+Maf1f1UeQ+5acJYIUw38VkAJL/nF4FQ3gS2SAGIGwaZ2Iw==", Role = "GroupAdmin" } 
             };
 
             PasswordHasher<Account> hasher = new PasswordHasher<Account>();      
 
             var user = _users.SingleOrDefault(x => x.Username == acc.Username && hasher.VerifyHashedPassword(x, x.Password, acc.Password) == PasswordVerificationResult.Success);
-
-            //string hashed = hasher.HashPassword(user, "test");
 
             // return null if user not found
             if (user == null)
@@ -64,7 +60,8 @@ namespace MessageHandlingApi.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[] 
                 {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Role, user.Role)
                 }),
                 //Token expires after a day
                 Expires = DateTime.UtcNow.AddDays(1),
@@ -86,9 +83,12 @@ namespace MessageHandlingApi.Controllers
         }
 
         // PUT api/values/5
+        [Authorize(Roles = "GroupAdmin")]
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public ActionResult Put(int id)
         {
+            var username = User.Identity.Name;
+            return Ok(string.Format("Value {0} updated by {1}", id, username)); 
         }
 
         // DELETE api/values/5

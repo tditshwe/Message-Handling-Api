@@ -38,6 +38,11 @@ namespace MessageHandlingApi
             {
                 c.SwaggerDoc("v1", new Info { Title = "Message Handling API", Version = "v1" });
 
+                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                {
+                    { "Bearer", new string[] { } }
+                });
+
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
                     Description = "Please insert user token",
