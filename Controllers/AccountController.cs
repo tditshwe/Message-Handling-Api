@@ -47,6 +47,7 @@ namespace MessageHandlingApi.Controllers
             string hashed = hasher.HashPassword(newAcc, acc.Password);           
 
             newAcc.Password = hashed;         
+<<<<<<< HEAD
 
             Context.Account.Add(newAcc);
             Context.SaveChanges();
@@ -85,6 +86,11 @@ namespace MessageHandlingApi.Controllers
             account.Token = tokenHandler.WriteToken(token);
 
             return Ok (tokenHandler.WriteToken(token));
+=======
+
+            Context.Account.Add(newAcc);
+            Context.SaveChanges();
+>>>>>>> 44fc51dc113a5a866deed4220be4f2b64f421c1d
         }
     }     
 }

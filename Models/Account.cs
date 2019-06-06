@@ -14,7 +14,10 @@ namespace MessageHandlingApi.Models
         [Key]
         public string Username { get; set; }
         public string Password { get; set; }
+<<<<<<< HEAD
         public string Name { get; set; }
+=======
+>>>>>>> 44fc51dc113a5a866deed4220be4f2b64f421c1d
         public string Status { get; set; }
 
         [NotMapped]
