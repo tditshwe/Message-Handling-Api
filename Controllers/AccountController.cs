@@ -19,21 +19,72 @@ namespace MessageHandlingApi.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        // POST api/values
+        private readonly MessageContext Context = new MessageContext();
+
+        /*public AccountController(MessageContext ctx)
+        {
+            Context = ctx;
+        }*/ 
+                
         /// <summary>
         /// Create a new account
         /// </summary>
+        // POST api/values
         [AllowAnonymous]
         [HttpPost]
-        public void Create([FromBody] Account acc)
+        public void Create([FromBody] AccountBody acc)
         {
             PasswordHasher<Account> hasher = new PasswordHasher<Account>();
 
-            // Hash account password
-            string hashed = hasher.HashPassword(acc, acc.Password);
+            Account newAcc = new Account
+            {
+                Username = acc.Username,
+                Role = "User",
+                Status = "Ready to chat"
+            };
 
-            acc.Password = hashed;
-            acc.Role = "User";
+            // Hash account password
+            string hashed = hasher.HashPassword(newAcc, acc.Password);           
+
+            newAcc.Password = hashed;         
+
+            Context.Account.Add(newAcc);
+            Context.SaveChanges();
         }
-    }
+
+        [AllowAnonymous]
+        [HttpPost("Authenticate")]
+        public IActionResult Authenticate([FromBody] Account acc)
+        {   
+            PasswordHasher<Account> hasher = new PasswordHasher<Account>();  
+            var account = Context.Account.SingleOrDefault(x => x.Username == acc.Username && hasher.VerifyHashedPassword(x, x.Password, acc.Password) == PasswordVerificationResult.Success);
+
+            // return null if account is not found
+            if (account == null)
+               return BadRequest(new { message = "Invalid login details" });
+
+            // authentication successful so generate jwt token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            // Secret for generating JWT tokens
+            string secret = "WhatsApp Messenger";
+            var key = Encoding.ASCII.GetBytes(secret);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[] 
+                {
+                    new Claim(ClaimTypes.Name, account.Username),
+                    new Claim(ClaimTypes.Role, account.Role)
+                }),
+                //Token expires after a day
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            account.Token = tokenHandler.WriteToken(token);
+
+            return Ok (tokenHandler.WriteToken(token));
+        }
+    }     
 }
