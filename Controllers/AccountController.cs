@@ -19,21 +19,37 @@ namespace MessageHandlingApi.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        // POST api/values
+        private readonly MessageContext Context = new MessageContext();
+
+        /*public AccountController(MessageContext ctx)
+        {
+            Context = ctx;
+        }*/ 
+                
         /// <summary>
         /// Create a new account
         /// </summary>
+        // POST api/values
         [AllowAnonymous]
         [HttpPost]
-        public void Create([FromBody] Account acc)
+        public void Create([FromBody] AccountBody acc)
         {
             PasswordHasher<Account> hasher = new PasswordHasher<Account>();
 
-            // Hash account password
-            string hashed = hasher.HashPassword(acc, acc.Password);
+            Account newAcc = new Account
+            {
+                Username = acc.Username,
+                Role = "User",
+                Status = "Ready to chat"
+            };
 
-            acc.Password = hashed;
-            acc.Role = "User";
+            // Hash account password
+            string hashed = hasher.HashPassword(newAcc, acc.Password);           
+
+            newAcc.Password = hashed;         
+
+            Context.Account.Add(newAcc);
+            Context.SaveChanges();
         }
     }
 }
