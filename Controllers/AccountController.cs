@@ -29,10 +29,10 @@ namespace MessageHandlingApi.Controllers
         /// <summary>
         /// Create a new account
         /// </summary>
-        // POST api/values
+        // POST messageHandlingApi/Account
         [AllowAnonymous]
         [HttpPost]
-        public void Create([FromBody] AccountBody acc)
+        public void Create([FromBody] AccountCreate acc)
         {
             PasswordHasher<Account> hasher = new PasswordHasher<Account>();
 
@@ -40,25 +40,29 @@ namespace MessageHandlingApi.Controllers
             {
                 Username = acc.Username,
                 Role = "User",
-                Status = "Ready to chat"
+                Status = "Ready to chat",
+                Name = acc.Name
             };
 
             // Hash account password
             string hashed = hasher.HashPassword(newAcc, acc.Password);           
 
             newAcc.Password = hashed;         
-<<<<<<< HEAD
 
             Context.Account.Add(newAcc);
             Context.SaveChanges();
         }
 
+        /// <summary>
+        /// Authenticate account and obtain user token
+        /// </summary>
+        // POST messageHandlingApi/Account/Authenticate
         [AllowAnonymous]
         [HttpPost("Authenticate")]
-        public IActionResult Authenticate([FromBody] Account acc)
+        public IActionResult Authenticate([FromBody] AccountLogin login)
         {   
             PasswordHasher<Account> hasher = new PasswordHasher<Account>();  
-            var account = Context.Account.SingleOrDefault(x => x.Username == acc.Username && hasher.VerifyHashedPassword(x, x.Password, acc.Password) == PasswordVerificationResult.Success);
+            var account = Context.Account.SingleOrDefault(x => x.Username == login.Username && hasher.VerifyHashedPassword(x, x.Password, login.Password) == PasswordVerificationResult.Success);
 
             // return null if account is not found
             if (account == null)
@@ -77,7 +81,7 @@ namespace MessageHandlingApi.Controllers
                     new Claim(ClaimTypes.Name, account.Username),
                     new Claim(ClaimTypes.Role, account.Role)
                 }),
-                //Token expires after a day
+                //Token expires after 7 day days
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -86,11 +90,23 @@ namespace MessageHandlingApi.Controllers
             account.Token = tokenHandler.WriteToken(token);
 
             return Ok (tokenHandler.WriteToken(token));
-=======
+        }
 
-            Context.Account.Add(newAcc);
+        /// <summary>
+        /// Update authenticated user account
+        /// </summary>
+        // POST messageHandlingApi/Account
+        [HttpPut]
+        public void Edit([FromBody] Account acc)
+        {
+            var username = User.Identity.Name;
+            Account edited = Context.Account.Find(username);
+
+            edited.Name = acc.Name;
+            edited.Status = acc.Status;
+
+            Context.Account.Update(edited);
             Context.SaveChanges();
->>>>>>> 44fc51dc113a5a866deed4220be4f2b64f421c1d
         }
     }     
 }

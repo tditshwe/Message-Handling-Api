@@ -12,7 +12,7 @@ namespace MessageHandlingApi
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source=CEN_KGOTHATSOD1\SQLEXPRESS;Initial Catalog=MessageHandling;Integrated Security=True;MultipleActiveResultSets=True");
+            optionsBuilder.UseSqlServer(@"Data Source=DESKTOP-JQQNVO0\SQLEXPRESS;Initial Catalog=MessageHandling;Integrated Security=True;MultipleActiveResultSets=True");
         }
     }
 }

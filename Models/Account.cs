@@ -4,20 +4,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MessageHandlingApi.Models
 {
-    public class AccountBody
+    public class AccountLogin
     {
         public string Username { get; set; }
         public string Password { get; set; }
     }
+
+    public class AccountCreate
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string Name { get; set; }
+    }
+    
     public class Account
     {
         [Key]
         public string Username { get; set; }
         public string Password { get; set; }
-<<<<<<< HEAD
         public string Name { get; set; }
-=======
->>>>>>> 44fc51dc113a5a866deed4220be4f2b64f421c1d
         public string Status { get; set; }
 
         [NotMapped]
