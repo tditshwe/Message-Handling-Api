@@ -19,6 +19,11 @@ namespace MessageHandlingApi.Models
     
     public class Account
     {
+        /*public Account()
+        {
+            Groups = new HashSet<Groups>();
+        }*/
+
         [Key]
         public string Username { get; set; }
         public string Password { get; set; }
@@ -29,7 +34,8 @@ namespace MessageHandlingApi.Models
         public string Token { get; set; }
         public string Role { get; set; }
         public string ImageUrl  { get; set; }
-        public int GroupsId  { get; set; }
+        //public int GroupsId  { get; set; }
         public virtual ICollection<Message> Messages { get; set; }
+        public virtual ICollection<Groups> Groups { get; set; }
     }
 }

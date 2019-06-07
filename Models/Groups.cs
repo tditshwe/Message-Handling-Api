@@ -4,6 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MessageHandlingApi.Models
 {
+    /*public Groups
+    {
+        Participants = new HashSet<Account>();
+    }*/
+
     public class Groups
     {
         public int Id { get; set; }
