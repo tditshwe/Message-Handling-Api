@@ -68,12 +68,11 @@ namespace MessageHandlingApi.Controllers
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            user.Token = tokenHandler.WriteToken(token);
 
             // remove password before returning
             user.Password = null;
 
-            return Ok (user);
+            return Ok (tokenHandler.WriteToken(token));
         }
 
         // POST api/values

@@ -9,6 +9,7 @@ namespace MessageHandlingApi
         public DbSet<Account> Account { get; set; }
         public DbSet<Message> Message  { get; set; }
         public DbSet<Groups> Groups  { get; set; }
+        public DbSet<AccountGroup> AccountGroup  { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

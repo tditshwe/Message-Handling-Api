@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MessageHandlingApi</name>
+    </assembly>
+    <members>
+        <member name="M:MessageHandlingApi.Controllers.AccountController.GetAccount">
+            <summary>
+            Get account info
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.AccountController.GetAccountList">
+            <summary>
+            Get a list of all accounts
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.AccountController.Create(MessageHandlingApi.Models.AccountCreate)">
+            <summary>
+            Create a new account
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.AccountController.Authenticate(MessageHandlingApi.Models.AccountLogin)">
+            <summary>
+            Login to obtain user token
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.AccountController.Edit(MessageHandlingApi.Models.AccountEdit)">
+            <summary>
+            Update authenticated user account
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.GroupController.GroupList">
+            <summary>
+            Get a list of all groups
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.GroupController.AccountGroups">
+            <summary>
+            Get all groups created by the authenticated account
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.GroupController.GroupInfo(System.Int32)">
+            <summary>
+            Get group info
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.GroupController.Create(System.String)">
+            <summary>
+            Create new group
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.GroupController.AddMember(System.Int32,System.String)">
+            <summary>
+            Add new member to the group
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.GroupController.Edit(System.Int32,System.String)">
+            <summary>
+            Edit group
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.MessageController.ChatHistory(System.String)">
+            <summary>
+            Get chat history with specific contact
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.MessageController.GroupChat(System.Int32)">
+            <summary>
+            Get group chat
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.MessageController.SendToContact(System.String,System.String)">
+            <summary>
+            Send message to contact
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.MessageController.SendToGroup(System.Int32,System.String)">
+            <summary>
+            Send message to group
+            </summary>
+        </member>
+    </members>
+</doc>

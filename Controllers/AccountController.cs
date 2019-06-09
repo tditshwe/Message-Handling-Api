@@ -21,10 +21,48 @@ namespace MessageHandlingApi.Controllers
     {
         private readonly MessageContext Context = new MessageContext();
 
-        /*public AccountController(MessageContext ctx)
+        /// <summary>
+        /// Get account info
+        /// </summary>
+        // GET messageHandlingApi/Account/
+        [HttpGet]
+        public IActionResult GetAccount()
         {
-            Context = ctx;
-        }*/ 
+            var acc = Context.Account.Find(User.Identity.Name);
+
+            return Ok (new AccountRetrieve
+            {
+                Username = acc.Username,
+                Name = acc.Name,
+                Status = acc.Status,
+                Role = acc.Role,
+                ImageUrl = acc.ImageUrl
+            });
+        }
+
+        /// <summary>
+        /// Get a list of all accounts
+        /// </summary>
+        // GET messageHandlingApi/Account/AccountList
+        [HttpGet ("AccountList")]
+        public IActionResult GetAccountList()
+        {
+            var accounts = Context.Account.ToList();
+            List<AccountRetrieve> accList = new List<AccountRetrieve>();
+
+            accounts.ForEach(
+                ac => accList.Add(new AccountRetrieve
+                {
+                    Username = ac.Username,
+                    Name = ac.Name,
+                    Status = ac.Status,
+                    Role = ac.Role,
+                    ImageUrl = ac.ImageUrl
+                })
+            );
+
+            return Ok (accList);
+        }
                 
         /// <summary>
         /// Create a new account
@@ -32,8 +70,13 @@ namespace MessageHandlingApi.Controllers
         // POST messageHandlingApi/Account
         [AllowAnonymous]
         [HttpPost]
-        public void Create([FromBody] AccountCreate acc)
+        public IActionResult Create([FromBody] AccountCreate acc)
         {
+            var existing = Context.Account.Find(acc.Username);
+
+            if (existing != null)
+                return BadRequest("This username is already taken by another person");
+
             PasswordHasher<Account> hasher = new PasswordHasher<Account>();
 
             Account newAcc = new Account
@@ -51,14 +94,16 @@ namespace MessageHandlingApi.Controllers
 
             Context.Account.Add(newAcc);
             Context.SaveChanges();
+
+            return Ok();
         }
 
         /// <summary>
-        /// Authenticate account and obtain user token
+        /// Login to obtain user token
         /// </summary>
-        // POST messageHandlingApi/Account/Authenticate
+        // POST messageHandlingApi/Account/Login
         [AllowAnonymous]
-        [HttpPost("Authenticate")]
+        [HttpPost("Login")]
         public IActionResult Authenticate([FromBody] AccountLogin login)
         {   
             PasswordHasher<Account> hasher = new PasswordHasher<Account>();  
@@ -87,17 +132,15 @@ namespace MessageHandlingApi.Controllers
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            account.Token = tokenHandler.WriteToken(token);
-
             return Ok (tokenHandler.WriteToken(token));
         }
 
         /// <summary>
         /// Update authenticated user account
         /// </summary>
-        // POST messageHandlingApi/Account
+        // PUT messageHandlingApi/Account
         [HttpPut]
-        public void Edit([FromBody] Account acc)
+        public void Edit([FromBody] AccountEdit acc)
         {
             var username = User.Identity.Name;
             Account edited = Context.Account.Find(username);
@@ -106,6 +149,19 @@ namespace MessageHandlingApi.Controllers
             edited.Status = acc.Status;
 
             Context.Account.Update(edited);
+            Context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Delete your account
+        /// </summary>
+        // PUT messageHandlingApi/Account
+        [HttpDelete]
+        public void Delete()
+        {
+            var account = Context.Account.Find(User.Identity.Name);
+
+            Context.Account.Remove(account);
             Context.SaveChanges();
         }
     }     
