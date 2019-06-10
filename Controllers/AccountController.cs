@@ -172,7 +172,12 @@ namespace MessageHandlingApi.Controllers
                     if (file.Length > maxContentLength)  
                         return BadRequest("Please Upload a file upto 1 MB.");   
                        
-                    file.CopyTo(stream);  
+                    file.CopyTo(stream);
+
+                    Account acc = Context.Account.Find(User.Identity.Name);
+                    acc.ImageUrl = fullPath;
+                    Context.Account.Update(acc);
+                    Context.SaveChanges();
                 }  
 
                 return Ok ("Profile picture uploaded successfully.");   

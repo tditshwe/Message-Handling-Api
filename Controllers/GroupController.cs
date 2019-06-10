@@ -114,6 +114,9 @@ namespace MessageHandlingApi.Controllers
             var group = Context.Groups.Find(groupId);
             var creator = Context.Account.Find(group.CreatorUsername);
 
+            if (contact == User.Identity.Name)
+                return BadRequest("You can't add yourself to the group");
+
             if (group == null)
                 return BadRequest(new { message = "Invalid group" });
 

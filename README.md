@@ -27,7 +27,7 @@ To authorize the Swagger UI, click the 'Authorize' button and insert 'Bearer [yo
 
 ## Setting up the database
 
-- To generate the database, execute the `MessageHandling.sql` file. This will create the `MessageHandling` database and its accompanying tables as illustrated in the [conceptual design](database/Conceptual design.jpg).
+- To generate the database, execute the `MessageHandling.sql` file. This will create the `MessageHandling` database and its accompanying tables as illustrated in the [conceptual design](Database/Conceptual-design.jpg).
 
 - Don't forget to change the database connection string on `appsettings.json` to the one corresponding to your database configuration.
 

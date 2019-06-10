@@ -29,7 +29,11 @@ namespace MessageHandlingApi.Controllers
         public IActionResult ChatHistory(string contact)
         {
             var username = User.Identity.Name;
-            var chat = Context.Message.Where(m => m.Sender == username && m.Receiver == contact).ToList();
+
+            if (contact == User.Identity.Name)
+                return BadRequest("You can't chat with yourself");
+
+            var chat = Context.Message.Where(m => (m.Sender == username && m.Receiver == contact) || (m.Sender == contact && m.Receiver == username)).ToList();
             List<MessageRetrieve> chatList = new List<MessageRetrieve>();
 
             chat.ForEach(
@@ -78,6 +82,9 @@ namespace MessageHandlingApi.Controllers
         {
             if (Context.Account.Find(contact) == null)
                 return BadRequest(new { message = "Invalid contact" });
+
+            if (contact == User.Identity.Name)
+                return BadRequest("You can't send a message to yourself");
 
             Message msg = new Message
             {
