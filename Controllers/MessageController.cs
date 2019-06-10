@@ -103,12 +103,19 @@ namespace MessageHandlingApi.Controllers
         {
             Groups group = Context.Groups.Find(groupId);
             var account = Context.Account.Find(User.Identity.Name);
+            var accGroup = Context.AccountGroup.Where(g => g.GroupId == groupId).ToList();
+
+            var link = new AccountGroup
+            {
+                Username = User.Identity.Name,
+                GroupId = groupId
+            };
 
             if (group == null)
                 return BadRequest(new { message = "Invalid group" });
 
-            //if (!group.Participants.Contains(account))
-                //return BadRequest(new { message = "You are not the member of this group" });
+            if (!accGroup.Contains(link))
+                return BadRequest(new { message = "You are not the member of this group" });
 
             Message msg = new Message
             {
@@ -123,6 +130,41 @@ namespace MessageHandlingApi.Controllers
             Context.SaveChanges();
 
             return Ok("Created");
+        }
+
+        /// <summary>
+        /// Delete a single message
+        /// </summary>
+        // DELETE messageHandlingApi/Message/{id}
+        [HttpDelete ("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var message = Context.Message.Find(id);
+
+            if (message == null)
+                return NotFound("Message doesn't exist");
+
+            Context.Message.Remove(message);
+            Context.SaveChanges();
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Delete chat history
+        /// </summary>
+        // DELETE messageHandlingApi/Message/deleteChat/{contact}
+        [HttpDelete ("deleteChat/{contact}")]
+        public void DeleteChat(string contact)
+        {
+            var username = User.Identity.Name;
+            var chat = Context.Message.Where(m => m.Sender == username && m.Receiver == contact).ToList();
+
+            chat.ForEach(
+                c =>  Context.Message.Remove(c)
+            );
+          
+            Context.SaveChanges();
         }
     }
 }

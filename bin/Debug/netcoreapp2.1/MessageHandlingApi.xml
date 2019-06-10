@@ -24,9 +24,19 @@
             Login to obtain user token
             </summary>
         </member>
+        <member name="M:MessageHandlingApi.Controllers.AccountController.UploadImage">
+            <summary>
+            Upload profile picture
+            </summary>
+        </member>
         <member name="M:MessageHandlingApi.Controllers.AccountController.Edit(MessageHandlingApi.Models.AccountEdit)">
             <summary>
             Update authenticated user account
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.AccountController.Delete">
+            <summary>
+            Delete your account
             </summary>
         </member>
         <member name="M:MessageHandlingApi.Controllers.GroupController.GroupList">
@@ -59,6 +69,11 @@
             Edit group
             </summary>
         </member>
+        <member name="M:MessageHandlingApi.Controllers.GroupController.Delete(System.Int32)">
+            <summary>
+            Delete a group
+            </summary>
+        </member>
         <member name="M:MessageHandlingApi.Controllers.MessageController.ChatHistory(System.String)">
             <summary>
             Get chat history with specific contact
@@ -77,6 +92,16 @@
         <member name="M:MessageHandlingApi.Controllers.MessageController.SendToGroup(System.Int32,System.String)">
             <summary>
             Send message to group
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.MessageController.Delete(System.Int32)">
+            <summary>
+            Delete a single message
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.MessageController.DeleteChat(System.String)">
+            <summary>
+            Delete chat history
             </summary>
         </member>
     </members>

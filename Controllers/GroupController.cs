@@ -29,7 +29,7 @@ namespace MessageHandlingApi.Controllers
         [HttpGet ("list")]
         public IActionResult GroupList()
         {
-            return Ok (Context.Groups);
+            return Ok (Context.Groups.Where(g => g.Id != 1));
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace MessageHandlingApi.Controllers
         [HttpPost ("{name}")]
         public void Create(string name)
         {
-            var account = Context.Account.Find();
+            var account = Context.Account.Find(User.Identity.Name);
 
             Groups newGroup = new Groups
             {
@@ -107,7 +107,7 @@ namespace MessageHandlingApi.Controllers
         /// </summary>
 
         // POST messageHandlingApi/Group/{groupId}/{username}
-        //[Authorize(Roles = "GroupAdmin")]
+        [Authorize(Roles = "GroupAdmin")]
         [HttpPost ("{groupId}/{contact}")]
         public IActionResult AddMember(int groupId, string contact)
         {
@@ -138,8 +138,8 @@ namespace MessageHandlingApi.Controllers
         /// <summary>
         /// Edit group
         /// </summary>
-
         // POST messageHandlingApi/Group/{name}
+        [Authorize(Roles = "GroupAdmin")]
         [HttpPut ("{id}/name")]
         public IActionResult Edit(int id, string name)
         {
@@ -153,6 +153,42 @@ namespace MessageHandlingApi.Controllers
 
             group.Name = name;
             Context.Groups.Update(group);
+            Context.SaveChanges();
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Delete a group
+        /// </summary>
+        // DELETE messageHandlingApi/Group/{id}
+        [Authorize(Roles = "GroupAdmin")]
+        [HttpDelete ("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var group = Context.Groups.Find(id);
+
+            if (group == null)
+                return NotFound("Group doesn't exist");
+
+            if (group.CreatorUsername != User.Identity.Name)
+                return BadRequest(new { message = "You are not the creator of this group" });
+
+            var accGroup = Context.AccountGroup.Where(g => g.GroupId == id).ToList();
+            var chat = Context.Message.Where(m => m.GroupsId == id).ToList();
+
+            // Delete all Account-Group links
+            accGroup.ForEach(
+                ag => Context.AccountGroup.Remove(ag)
+            );
+
+            // Delete all group messages
+            chat.ForEach(
+                c => Context.Message.Remove(c)
+            );
+
+            Context.SaveChanges();
+            Context.Groups.Remove(group);
             Context.SaveChanges();
 
             return Ok();

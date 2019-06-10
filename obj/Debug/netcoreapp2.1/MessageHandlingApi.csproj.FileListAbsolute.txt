@@ -28,3 +28,5 @@ C:\Users\kgothatsod\Documents\Visual Studio Code\MessageHandlingApi\obj\Debug\ne
 C:\Users\kgothatsod\Documents\Visual Studio Code\MessageHandlingApi\obj\Debug\netcoreapp2.1\MessageHandlingApi.pdb
 C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\bin\Debug\netcoreapp2.1\MessageHandlingApi.xml
 C:\Users\Trinity\Documents\Visual Studio Code\MessageHandlingApi\obj\Debug\netcoreapp2.1\MessageHandlingApi.xml
+C:\Users\kgothatsod\Documents\Visual Studio Code\MessageHandlingApi\bin\Debug\netcoreapp2.1\MessageHandlingApi.xml
+C:\Users\kgothatsod\Documents\Visual Studio Code\MessageHandlingApi\obj\Debug\netcoreapp2.1\MessageHandlingApi.xml

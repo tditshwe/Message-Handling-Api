@@ -41,6 +41,5 @@ namespace MessageHandlingApi.Models
         public string Status { get; set; }
         public string Role { get; set; }
         public string ImageUrl  { get; set; }
-        //public virtual ICollection<Message> Messages { get; set; }
     }
 }

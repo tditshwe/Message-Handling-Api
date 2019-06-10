@@ -1,6 +1,7 @@
 using MessageHandlingApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace MessageHandlingApi
 {
@@ -13,7 +14,10 @@ namespace MessageHandlingApi
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source=DESKTOP-JQQNVO0\SQLEXPRESS;Initial Catalog=MessageHandling;Integrated Security=True;MultipleActiveResultSets=True");
+            IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile(Directory.GetCurrentDirectory() + "\\appsettings.json");
+            IConfigurationRoot config = builder.Build();
+
+            optionsBuilder.UseSqlServer(config["ConnectionString"]);
         }
     }
 }
