@@ -29,7 +29,14 @@ namespace MessageHandlingApi.Controllers
         [HttpGet ("list")]
         public IActionResult GroupList()
         {
-            return Ok (Context.Groups.Where(g => g.Id != 1));
+            try
+            {
+                return Ok (Context.Groups.Where(g => g.Id != 1));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         /// <summary>
@@ -40,9 +47,16 @@ namespace MessageHandlingApi.Controllers
         [HttpGet]
         public IActionResult AccountGroups()
         {
-            var accountGroups = Context.Groups.Where(g => g.CreatorUsername == User.Identity.Name);
+            try
+            {
+                var accountGroups = Context.Groups.Where(g => g.CreatorUsername == User.Identity.Name);
 
-            return Ok (accountGroups);
+                return Ok (accountGroups);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         /// <summary>
@@ -53,30 +67,37 @@ namespace MessageHandlingApi.Controllers
         [HttpGet ("{id}")]
         public IActionResult GroupInfo(int id)
         {
-            var group = Context.Groups.Find(id);
-            var creator = Context.Account.Find(group.CreatorUsername);
-            var accGroup = Context.AccountGroup.Where(g => g.GroupId == id).ToList();
-            List<AccountEdit> members = new List<AccountEdit>();
-
-            accGroup.ForEach(
-                ag => members.Add(new AccountEdit
-                {
-                    Name = Context.Account.Find(ag.Username).Name,
-                    Status = Context.Account.Find(ag.Username).Status
-                })
-            );
-
-            return Ok (new GroupInfo
+            try
             {
-                Name = group.Name,
-                Creator = new AccountEdit
+                var group = Context.Groups.Find(id);
+                var creator = Context.Account.Find(group.CreatorUsername);
+                var accGroup = Context.AccountGroup.Where(g => g.GroupId == id).ToList();
+                List<AccountEdit> members = new List<AccountEdit>();
+
+                accGroup.ForEach(
+                    ag => members.Add(new AccountEdit
+                    {
+                        Name = Context.Account.Find(ag.Username).Name,
+                        Status = Context.Account.Find(ag.Username).Status
+                    })
+                );
+
+                return Ok (new GroupInfo
                 {
-                    Name = creator.Name,
-                    Status = creator.Status,
-                },
-                Participants = accGroup.Count(),
-                ListOfParticipants = members
-            });
+                    Name = group.Name,
+                    Creator = new AccountEdit
+                    {
+                        Name = creator.Name,
+                        Status = creator.Status,
+                    },
+                    Participants = accGroup.Count(),
+                    ListOfParticipants = members
+                });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         /// <summary>
@@ -85,21 +106,30 @@ namespace MessageHandlingApi.Controllers
 
         // POST messageHandlingApi/Group/{name}
         [HttpPost ("{name}")]
-        public void Create(string name)
+        public IActionResult Create(string name)
         {
-            var account = Context.Account.Find(User.Identity.Name);
-
-            Groups newGroup = new Groups
+            try
             {
-                Name = name,
-                CreatorUsername = account.Username
-            };
+                var account = Context.Account.Find(User.Identity.Name);
 
-            account.Role = "GroupAdmin";
+                Groups newGroup = new Groups
+                {
+                    Name = name,
+                    CreatorUsername = account.Username
+                };
 
-            Context.Account.Update(account);
-            Context.Groups.Add(newGroup);
-            Context.SaveChanges();
+                account.Role = "GroupAdmin";
+
+                Context.Account.Update(account);
+                Context.Groups.Add(newGroup);
+                Context.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         /// <summary>
@@ -111,54 +141,68 @@ namespace MessageHandlingApi.Controllers
         [HttpPost ("{groupId}/{contact}")]
         public IActionResult AddMember(int groupId, string contact)
         {
-            var group = Context.Groups.Find(groupId);
-            var creator = Context.Account.Find(group.CreatorUsername);
-
-            if (contact == User.Identity.Name)
-                return BadRequest("You can't add yourself to the group");
-
-            if (group == null)
-                return BadRequest(new { message = "Invalid group" });
-
-            if (group.CreatorUsername != User.Identity.Name)
-                return BadRequest(new { message = "You are not the creator of this group" });
-
-            if (Context.Account.Find(contact) == null)
-                return BadRequest(new { message = "Invalid contact, cannot be added to group" });
-            
-            AccountGroup ag = new AccountGroup
+            try
             {
-                Username = contact,
-                GroupId = groupId
-            };
-            
-            Context.AccountGroup.Add(ag);
-            Context.SaveChanges();
+                var group = Context.Groups.Find(groupId);
+                var creator = Context.Account.Find(group.CreatorUsername);
 
-            return Ok();
+                if (contact == User.Identity.Name)
+                    return BadRequest("You can't add yourself to the group");
+
+                if (group == null)
+                    return BadRequest(new { message = "Invalid group" });
+
+                if (group.CreatorUsername != User.Identity.Name)
+                    return BadRequest(new { message = "You are not the creator of this group" });
+
+                if (Context.Account.Find(contact) == null)
+                    return BadRequest(new { message = "Invalid contact, cannot be added to group" });
+                
+                AccountGroup ag = new AccountGroup
+                {
+                    Username = contact,
+                    GroupId = groupId
+                };
+                
+                Context.AccountGroup.Add(ag);
+                Context.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         /// <summary>
         /// Edit group
         /// </summary>
-        // POST messageHandlingApi/Group/{name}
+        // PUT messageHandlingApi/Group/{name}
         [Authorize(Roles = "GroupAdmin")]
         [HttpPut ("{id}/name")]
         public IActionResult Edit(int id, string name)
         {
-            var group = Context.Groups.Find(id);
+            try
+            {
+                var group = Context.Groups.Find(id);
 
-            if (group == null)
-                return BadRequest(new { message = "Invalid group" });
+                if (group == null)
+                    return BadRequest(new { message = "Invalid group" });
 
-            if (group.CreatorUsername != User.Identity.Name)
-                return BadRequest(new { message = "You are not the creator of this group" });
+                if (group.CreatorUsername != User.Identity.Name)
+                    return BadRequest(new { message = "You are not the creator of this group" });
 
-            group.Name = name;
-            Context.Groups.Update(group);
-            Context.SaveChanges();
+                group.Name = name;
+                Context.Groups.Update(group);
+                Context.SaveChanges();
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         /// <summary>
@@ -169,32 +213,39 @@ namespace MessageHandlingApi.Controllers
         [HttpDelete ("{id}")]
         public IActionResult Delete(int id)
         {
-            var group = Context.Groups.Find(id);
+            try
+            {
+                var group = Context.Groups.Find(id);
 
-            if (group == null)
-                return NotFound("Group doesn't exist");
+                if (group == null)
+                    return NotFound("Group doesn't exist");
 
-            if (group.CreatorUsername != User.Identity.Name)
-                return BadRequest(new { message = "You are not the creator of this group" });
+                if (group.CreatorUsername != User.Identity.Name)
+                    return BadRequest(new { message = "You are not the creator of this group" });
 
-            var accGroup = Context.AccountGroup.Where(g => g.GroupId == id).ToList();
-            var chat = Context.Message.Where(m => m.GroupsId == id).ToList();
+                var accGroup = Context.AccountGroup.Where(g => g.GroupId == id).ToList();
+                var chat = Context.Message.Where(m => m.GroupsId == id).ToList();
 
-            // Delete all Account-Group links
-            accGroup.ForEach(
-                ag => Context.AccountGroup.Remove(ag)
-            );
+                // Delete all Account-Group links
+                accGroup.ForEach(
+                    ag => Context.AccountGroup.Remove(ag)
+                );
 
-            // Delete all group messages
-            chat.ForEach(
-                c => Context.Message.Remove(c)
-            );
+                // Delete all group messages
+                chat.ForEach(
+                    c => Context.Message.Remove(c)
+                );
 
-            Context.SaveChanges();
-            Context.Groups.Remove(group);
-            Context.SaveChanges();
+                Context.SaveChanges();
+                Context.Groups.Remove(group);
+                Context.SaveChanges();
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
     }
 }

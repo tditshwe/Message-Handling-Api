@@ -10,6 +10,7 @@ namespace MessageHandlingApi.Models
         public DateTime DateSent { get; set; }
         public string Text { get; set; }
     }
+    
     public class Message
     {
         public int Id { get; set; }
