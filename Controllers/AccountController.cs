@@ -49,7 +49,7 @@ namespace MessageHandlingApi.Controllers
         [HttpGet ("AccountList")]
         public IActionResult GetAccountList()
         {
-            var accounts = Context.Account.ToList();
+            var accounts = Context.Account.Where(ac => ac.Username != User.Identity.Name).ToList();
             List<AccountRetrieve> accList = new List<AccountRetrieve>();
 
             accounts.ForEach(
@@ -134,7 +134,7 @@ namespace MessageHandlingApi.Controllers
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return Ok (tokenHandler.WriteToken(token));
+            return Ok (tokenHandler.WriteToken(token) );
         }
         
         /// <summary>

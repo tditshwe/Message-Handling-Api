@@ -39,6 +39,16 @@
             Delete your account
             </summary>
         </member>
+        <member name="M:MessageHandlingApi.Controllers.ChatController.ChatList">
+            <summary>
+            Get a list of user chats
+            </summary>
+        </member>
+        <member name="M:MessageHandlingApi.Controllers.ChatController.Create(System.String,System.Int32)">
+            <summary>
+            Create new chat
+            </summary>
+        </member>
         <member name="M:MessageHandlingApi.Controllers.GroupController.GroupList">
             <summary>
             Get a list of all groups
