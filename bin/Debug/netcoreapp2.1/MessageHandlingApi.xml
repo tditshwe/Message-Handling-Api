@@ -104,6 +104,11 @@
             Send message to group
             </summary>
         </member>
+        <member name="M:MessageHandlingApi.Controllers.MessageController.Edit(System.Int32,System.String)">
+            <summary>
+            Edit message
+            </summary>
+        </member>
         <member name="M:MessageHandlingApi.Controllers.MessageController.Delete(System.Int32)">
             <summary>
             Delete a single message
