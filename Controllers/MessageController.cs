@@ -102,9 +102,25 @@ namespace MessageHandlingApi.Controllers
                 var chat = Context.Chat.Where(c => (c.SenderUsername == User.Identity.Name && c.ReceiverUsername == contact)
                     || ( c.ReceiverUsername == User.Identity.Name && c.SenderUsername == contact)).First();
 
-                chat.LastText = text;
-                chat.LastMessageDate = DateTime.Now;
+                if (chat == null)
+                {
+                    Chat newChat = new Chat
+                    {
+                        LastText = text,
+                        LastMessageDate = DateTime.Now,
+                        SenderUsername = User.Identity.Name,
+                        IsGroup = false,
+                        ReceiverUsername = contact             
+                    };
 
+                    Context.Chat.Add(newChat);
+                }
+                else
+                {
+                    chat.LastText = text;
+                    chat.LastMessageDate = DateTime.Now;
+                    Context.Chat.Update(chat);
+                }
 
                 if (contact == User.Identity.Name)
                     return BadRequest("You can't send a message to yourself");
@@ -119,7 +135,6 @@ namespace MessageHandlingApi.Controllers
                 };
 
                 Context.Message.Add(msg);
-                Context.Chat.Update(chat);
                 Context.SaveChanges();
 
                 return Ok();
