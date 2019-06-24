@@ -100,9 +100,9 @@ namespace MessageHandlingApi.Controllers
                     return BadRequest(new { message = "Invalid contact" });
 
                 var chat = Context.Chat.Where(c => (c.SenderUsername == User.Identity.Name && c.ReceiverUsername == contact)
-                    || ( c.ReceiverUsername == User.Identity.Name && c.SenderUsername == contact)).First();
+                    || ( c.ReceiverUsername == User.Identity.Name && c.SenderUsername == contact));
 
-                if (chat == null)
+                if (chat.Count() == 0)
                 {
                     Chat newChat = new Chat
                     {
@@ -117,9 +117,11 @@ namespace MessageHandlingApi.Controllers
                 }
                 else
                 {
-                    chat.LastText = text;
-                    chat.LastMessageDate = DateTime.Now;
-                    Context.Chat.Update(chat);
+                    Chat c = chat.First();
+
+                    c.LastText = text;
+                    c.LastMessageDate = DateTime.Now;
+                    Context.Chat.Update(c);
                 }
 
                 if (contact == User.Identity.Name)
