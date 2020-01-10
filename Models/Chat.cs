@@ -8,12 +8,11 @@ namespace MessageHandlingApi.Models
     public class Chat
     {
         public int Id { get; set; }
-        public string LastText { get; set; } 
-        public DateTime LastMessageDate { get; set; }
-        public bool IsGroup { get; set; }
+        public int LastMessageId { get; set; }
         public string ReceiverUsername { get; set; }
-        public int GroupId { get; set; }
         public string SenderUsername { get; set; }
-        public Account Receiver { get; set; }
+        public virtual Account Sender { get; set; } 
+        public virtual Account Receiver { get; set; }
+        public virtual Message LastMessage { get; set; } 
     }
 }

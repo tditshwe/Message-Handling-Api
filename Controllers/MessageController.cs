@@ -35,14 +35,14 @@ namespace MessageHandlingApi.Controllers
                 if (contact == User.Identity.Name)
                     return BadRequest("You can't chat with yourself");
 
-                var chat = Context.Message.Where(m => (m.Sender == username && m.Receiver == contact) || (m.Sender == contact && m.Receiver == username)).ToList();
+                var chat = Context.Message.Where(m => (m.SenderUsername == username) || (m.SenderUsername == contact)).ToList();
                 List<MessageRetrieve> chatList = new List<MessageRetrieve>();
 
                 chat.ForEach(
                     c => chatList.Add(new MessageRetrieve
                     {
-                        Sender = c.Sender,
-                        SenderName = Context.Account.Find(c.Sender).Name,
+                        Sender = c.SenderUsername,
+                        SenderName = Context.Account.Find(c.SenderUsername).Name,
                         DateSent = c.DateSent,
                         Text = c.Text
                     })
@@ -66,14 +66,14 @@ namespace MessageHandlingApi.Controllers
             try
             {
                 var username = User.Identity.Name;
-                var chat = Context.Message.Where(m => m.Sender == username && m.GroupsId == groupId).ToList();
+                var chat = Context.Message.Where(m => m.SenderUsername == username).ToList();
                 List<MessageRetrieve> chatList = new List<MessageRetrieve>();
 
                 chat.ForEach(
                     c => chatList.Add(new MessageRetrieve
                     {
-                        Sender = c.Sender,
-                        SenderName = Context.Account.Find(c.Sender).Name,
+                        Sender = c.SenderUsername,
+                        SenderName = Context.Account.Find(c.SenderUsername).Name,
                         DateSent = c.DateSent,
                         Text = c.Text
                     })
@@ -102,15 +102,28 @@ namespace MessageHandlingApi.Controllers
                 var chat = Context.Chat.Where(c => (c.SenderUsername == User.Identity.Name && c.ReceiverUsername == contact)
                     || ( c.ReceiverUsername == User.Identity.Name && c.SenderUsername == contact));
 
+                Message msg = new Message
+                {
+                    Text = text,
+                    DateSent = DateTime.Now,
+                    SenderUsername =  User.Identity.Name,
+                };
+
+                AccountMessage AccMess = new AccountMessage {
+                    AccountUsername = User.Identity.Name,
+                    MessageId = msg.Id
+                };
+
+                Context.Message.Add(msg);
+                Context.AccountMessage.Add(AccMess);
+
                 if (chat.Count() == 0)
                 {
                     Chat newChat = new Chat
                     {
-                        LastText = text,
-                        LastMessageDate = DateTime.Now,
                         SenderUsername = User.Identity.Name,
-                        IsGroup = false,
-                        ReceiverUsername = contact             
+                        ReceiverUsername = contact,
+                        LastMessageId = msg.Id           
                     };
 
                     Context.Chat.Add(newChat);
@@ -118,25 +131,13 @@ namespace MessageHandlingApi.Controllers
                 else
                 {
                     Chat c = chat.First();
-
-                    c.LastText = text;
-                    c.LastMessageDate = DateTime.Now;
+                    c.LastMessageId = msg.Id;
                     Context.Chat.Update(c);
                 }
 
                 if (contact == User.Identity.Name)
                     return BadRequest("You can't send a message to yourself");
 
-                Message msg = new Message
-                {
-                    Text = text,
-                    DateSent = DateTime.Now,
-                    Sender =  User.Identity.Name,
-                    Receiver = contact,
-                    GroupsId = 1
-                };
-
-                Context.Message.Add(msg);
                 Context.SaveChanges();
 
                 return Ok();
@@ -176,9 +177,7 @@ namespace MessageHandlingApi.Controllers
                 {
                     Text = text,
                     DateSent = DateTime.Now,
-                    Sender =  User.Identity.Name,
-                    Receiver = User.Identity.Name,
-                    GroupsId = groupId
+                    SenderUsername =  User.Identity.Name,
                 };
 
                 Context.Message.Add(msg);
@@ -206,7 +205,7 @@ namespace MessageHandlingApi.Controllers
                 if (msg == null)
                     return StatusCode(404, "Message not found");
                 
-                if (msg.Sender != User.Identity.Name)
+                if (msg.SenderUsername != User.Identity.Name)
                     return BadRequest("You did not write this message");
 
                 msg.Text = newText;
@@ -235,7 +234,7 @@ namespace MessageHandlingApi.Controllers
                 if (message == null)
                     return NotFound("Message doesn't exist");
 
-                if (message.Sender != User.Identity.Name)
+                if (message.SenderUsername != User.Identity.Name)
                     return BadRequest("You are not the sender of this message");
 
                 Context.Message.Remove(message);
@@ -259,7 +258,7 @@ namespace MessageHandlingApi.Controllers
             try
             {
                 var username = User.Identity.Name;
-                var chat = Context.Message.Where(m => m.Sender == username && m.Receiver == contact).ToList();
+                var chat = Context.Message.Where(m => m.SenderUsername == username).ToList();
 
                 chat.ForEach(
                     c =>  Context.Message.Remove(c)

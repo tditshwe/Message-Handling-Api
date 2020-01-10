@@ -224,7 +224,7 @@ namespace MessageHandlingApi.Controllers
                     return BadRequest(new { message = "You are not the creator of this group" });
 
                 var accGroup = Context.AccountGroup.Where(g => g.GroupId == id).ToList();
-                var chat = Context.Message.Where(m => m.GroupsId == id).ToList();
+                //var chat = Context.Message.Where(m => m.GroupsId == id).ToList();
 
                 // Delete all Account-Group links
                 accGroup.ForEach(
@@ -232,9 +232,9 @@ namespace MessageHandlingApi.Controllers
                 );
 
                 // Delete all group messages
-                chat.ForEach(
+                /*chat.ForEach(
                     c => Context.Message.Remove(c)
-                );
+                );*/
 
                 Context.SaveChanges();
                 Context.Groups.Remove(group);

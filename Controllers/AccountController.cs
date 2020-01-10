@@ -157,7 +157,13 @@ namespace MessageHandlingApi.Controllers
                 };
 
                 var token = tokenHandler.CreateToken(tokenDescriptor);
-                return Ok (tokenHandler.WriteToken(token));
+                return Ok (new {
+                    Username =  account.Username,
+                    Name = account.Name,
+                    Token = tokenHandler.WriteToken(token),
+                    Status = account.Status,
+                    ImageUrl = account.ImageUrl
+                });
             }
             catch (Exception e)
             {
@@ -257,7 +263,7 @@ namespace MessageHandlingApi.Controllers
             try
             {
                 var account = Context.Account.Find(User.Identity.Name);
-                var chat = Context.Message.Where(m => m.Sender == account.Username || m.Receiver == account.Username).ToList();
+                var chat = Context.Message.Where(m => m.SenderUsername == account.Username).ToList();
                 var accountGroups = Context.Groups.Where(g => g.CreatorUsername == User.Identity.Name);
 
                 // Delete all messages sent and received by account
