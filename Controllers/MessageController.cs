@@ -35,7 +35,7 @@ namespace MessageHandlingApi.Controllers
                 if (contact == User.Identity.Name)
                     return BadRequest("You can't chat with yourself");
 
-                var chat = Context.Message.Where(m => (m.SenderUsername == username) || (m.SenderUsername == contact)).ToList();
+                /*var chat = Context.Message.Where(m => (m.SenderUsername == username) || (m.SenderUsername == contact)).ToList();
                 List<MessageRetrieve> chatList = new List<MessageRetrieve>();
 
                 chat.ForEach(
@@ -46,9 +46,13 @@ namespace MessageHandlingApi.Controllers
                         DateSent = c.DateSent,
                         Text = c.Text
                     })
-                );
+                );*/
 
-                return Ok (chatList);
+                var contactMessages = Context.Account.Find(contact)
+                    .AccountMessages
+                    .Where(am => am.Message.SenderUsername == User.Identity.Name);
+
+                return Ok ();
             }
             catch (Exception e)
             {
@@ -109,13 +113,15 @@ namespace MessageHandlingApi.Controllers
                     SenderUsername =  User.Identity.Name,
                 };
 
+                Context.Message.Add(msg);
+                Context.SaveChanges();
+
                 AccountMessage AccMess = new AccountMessage {
-                    AccountUsername = User.Identity.Name,
+                    AccountUsername = contact,
                     MessageId = msg.Id
                 };
-
-                Context.Message.Add(msg);
-                Context.AccountMessage.Add(AccMess);
+                
+                Context.AccountMessage.Add(AccMess);                
 
                 if (chat.Count() == 0)
                 {
