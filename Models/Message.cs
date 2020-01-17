@@ -17,8 +17,10 @@ namespace MessageHandlingApi.Models
         public int Id { get; set; }
         public string Text { get; set; }
         public DateTime DateSent { get; set; }
+
+        [ForeignKey ("Account")]
         public string SenderUsername { get; set; }
-        //public virtual Account Sender { get; set; }
+        public virtual Account Sender { get; set; }
         public virtual Chat Chat { get; set; }
         public virtual IList<AccountMessage> AccountMessages { get; set; }
     }

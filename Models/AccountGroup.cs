@@ -2,8 +2,9 @@ namespace MessageHandlingApi.Models
 {   
     public class AccountGroup
     {
-        public int id  { get; set; }
-        public string Username { get; set; }
+        public string AccountUsername { get; set; }
+        public virtual Account Account { get; set; }
         public int GroupId { get; set; }
+        public virtual Groups Group { get; set; }
     }
 }

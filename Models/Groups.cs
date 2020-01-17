@@ -16,5 +16,6 @@ namespace MessageHandlingApi.Models
         public int Id { get; set; }
         public string Name { get; set; }       
         public string CreatorUsername { get; set; }
+        public virtual IList<AccountGroup> GroupAccounts { get; set; }
     }
 }

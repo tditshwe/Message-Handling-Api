@@ -46,5 +46,6 @@ namespace MessageHandlingApi.Models
         public virtual ICollection<Chat> ChatsReceived  { get; set; }
         //public virtual ICollection<Groups> GroupsCreated  { get; set; }
         public virtual IList<AccountMessage> AccountMessages { get; set; }
+        public virtual IList<AccountGroup> AccountGroups { get; set; }
     }
 }

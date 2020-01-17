@@ -42,7 +42,19 @@ namespace MessageHandlingApi
             modelBuilder.Entity<AccountMessage>()
                 .HasOne<Message>(sc => sc.Message)
                 .WithMany(a => a.AccountMessages)
-                .HasForeignKey(sc => sc.MessageId);           
+                .HasForeignKey(sc => sc.MessageId);
+
+            modelBuilder.Entity<AccountGroup>().HasKey(sc => new { sc.AccountUsername, sc.GroupId });
+
+            modelBuilder.Entity<AccountGroup>()
+                .HasOne<Account>(sc => sc.Account)
+                .WithMany(a => a.AccountGroups)
+                .HasForeignKey(sc => sc.AccountUsername);
+
+            modelBuilder.Entity<AccountGroup>()
+                .HasOne<Groups>(sc => sc.Group)
+                .WithMany(a => a.GroupAccounts)
+                .HasForeignKey(sc => sc.GroupId);          
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

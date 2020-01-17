@@ -18,19 +18,13 @@ CREATE TABLE Message(
 	text varchar(max) not null,
 	datesent datetime not null,
 	senderusername varchar(20) not null foreign key references Account(username)
-);*/
+);
 
 Create TABLE AccountMessage
 (
 	accountusername varchar(20) not null foreign key references Account(username),
 	messageid int not null foreign key references Message(id)
 )
-
-/*Create TABLE AccountGroups
-(
-	accountusername varchar(20) not null foreign key references Account(username),
-	groupsid int not null foreign key references Groups(id)
-);
 
 ALTER TABLE Account
 Add name varchar(100) not null default 'User 1';
@@ -39,5 +33,11 @@ CREATE TABLE Chat(
 	id int not null IDENTITY(1,1) PRIMARY KEY,
 	lastmessageid int not null default 0,
 	senderusername varchar(20) not null foreign key references Account(username),
-	receiverusername varchar(20) not null foreign key references Account(username)*/
+	receiverusername varchar(20) not null foreign key references Account(username)
+);*/
+
+Create TABLE AccountGroup
+(
+	accountusername varchar(20) not null foreign key references Account(username),
+	groupid int not null foreign key references Groups(id)
 );

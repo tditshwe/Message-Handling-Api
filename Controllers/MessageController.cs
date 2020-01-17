@@ -47,12 +47,30 @@ namespace MessageHandlingApi.Controllers
                         Text = c.Text
                     })
                 );*/
+                List<Message> chatMessages = new List<Message>();
 
                 var contactMessages = Context.Account.Find(contact)
                     .AccountMessages
                     .Where(am => am.Message.SenderUsername == User.Identity.Name);
 
-                return Ok ();
+                var messages = Context.Account.Find(User.Identity.Name)
+                    .AccountMessages
+                    .Where(am => am.Message.SenderUsername == contact)
+                    .Union(contactMessages)
+                    .OrderBy(am => am.Message.DateSent)
+                    .ToList();
+
+                messages.ForEach(m => chatMessages.Add(new Message {
+                    Id = m.Message.Id,
+                    Text = m.Message.Text,
+                    DateSent = m.Message.DateSent,
+                    SenderUsername = m.Message.SenderUsername,
+                    Sender = new Account {
+                        Name = m.Message.Sender.Name
+                    }
+                }));
+
+                return Ok (chatMessages);
             }
             catch (Exception e)
             {
@@ -169,7 +187,7 @@ namespace MessageHandlingApi.Controllers
 
                 var link = new AccountGroup
                 {
-                    Username = User.Identity.Name,
+                    AccountUsername = User.Identity.Name,
                     GroupId = groupId
                 };
 
