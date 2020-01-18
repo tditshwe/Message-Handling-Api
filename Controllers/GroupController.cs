@@ -40,7 +40,7 @@ namespace MessageHandlingApi.Controllers
         }
 
         /// <summary>
-        /// Get all groups created by the authenticated account
+        /// Get all groups joined by the authenticated account
         /// </summary>
 
         // GET messageHandlingApi/Group/
@@ -49,7 +49,8 @@ namespace MessageHandlingApi.Controllers
         {
             try
             {
-                var accountGroups = Context.Groups.Where(g => g.CreatorUsername == User.Identity.Name);
+                var acc = Context.Account.Find(User.Identity.Name);
+                var accountGroups = acc.AccountGroups;
 
                 return Ok (accountGroups);
             }
@@ -77,8 +78,8 @@ namespace MessageHandlingApi.Controllers
                 accGroup.ForEach(
                     ag => members.Add(new AccountEdit
                     {
-                        Name = Context.Account.Find(ag.Username).Name,
-                        Status = Context.Account.Find(ag.Username).Status
+                        Name = Context.Account.Find(ag.AccountUsername).Name,
+                        Status = Context.Account.Find(ag.AccountUsername).Status
                     })
                 );
 
@@ -106,7 +107,7 @@ namespace MessageHandlingApi.Controllers
 
         // POST messageHandlingApi/Group/{name}
         [HttpPost ("{name}")]
-        public IActionResult Create(string name)
+        public IActionResult Create(string name, List<Account> participants)
         {
             try
             {
@@ -119,6 +120,16 @@ namespace MessageHandlingApi.Controllers
                 };
 
                 account.Role = "GroupAdmin";
+
+                if (participants.Count > 0)
+                {
+                    newGroup.GroupAccounts = new List<AccountGroup>();
+
+                    participants.ForEach(p => newGroup.GroupAccounts.Add(new AccountGroup {
+                        Group = newGroup,
+                        Account = p
+                    }));
+                }
 
                 Context.Account.Update(account);
                 Context.Groups.Add(newGroup);
@@ -160,7 +171,7 @@ namespace MessageHandlingApi.Controllers
                 
                 AccountGroup ag = new AccountGroup
                 {
-                    Username = contact,
+                    AccountUsername = contact,
                     GroupId = groupId
                 };
                 
@@ -224,7 +235,7 @@ namespace MessageHandlingApi.Controllers
                     return BadRequest(new { message = "You are not the creator of this group" });
 
                 var accGroup = Context.AccountGroup.Where(g => g.GroupId == id).ToList();
-                var chat = Context.Message.Where(m => m.GroupsId == id).ToList();
+                //var chat = Context.Message.Where(m => m.GroupsId == id).ToList();
 
                 // Delete all Account-Group links
                 accGroup.ForEach(
@@ -232,9 +243,9 @@ namespace MessageHandlingApi.Controllers
                 );
 
                 // Delete all group messages
-                chat.ForEach(
+                /*chat.ForEach(
                     c => Context.Message.Remove(c)
-                );
+                );*/
 
                 Context.SaveChanges();
                 Context.Groups.Remove(group);

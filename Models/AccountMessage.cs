@@ -1,10 +1,10 @@
 namespace MessageHandlingApi.Models
-{   
-    public class AccountGroup
+{
+    public class AccountMessage
     {
         public string AccountUsername { get; set; }
         public virtual Account Account { get; set; }
-        public int GroupId { get; set; }
-        public virtual Groups Group { get; set; }
+        public int MessageId { get; set; }
+        public virtual Message Message { get; set; }
     }
 }

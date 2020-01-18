@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Text;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
@@ -30,26 +31,40 @@ namespace MessageHandlingApi.Controllers
         [HttpGet]
         public IActionResult ChatList()
         {
-            var chats = Context.Chat.Where(c => c.SenderUsername == User.Identity.Name || c.ReceiverUsername == User.Identity.Name).ToList();
+            var chats = Context.Chat           
+                .Where(c => c.SenderUsername == User.Identity.Name || c.ReceiverUsername == User.Identity.Name)
+                //.Include(c => c.Sender)
+                //.Include(c => c.Receiver)
+                .ToList();
+            
+            List<Chat> chatList = new List<Chat>();
 
-            foreach (Chat c in chats)
-            {
-                Account rec;
+            chats.ForEach(c => {
+                chatList.Add(new Chat {
+                    Id = c.Id,
+                    ReceiverUsername = c.ReceiverUsername,
+                    SenderUsername = c.SenderUsername,
+                    Receiver = new Account {
+                        Username = c.ReceiverUsername,
+                        Name = c.Receiver.Name,
+                        Status = c.Receiver.Status,
+                        ImageUrl = c.Receiver.ImageUrl
+                    },
+                    Sender = new Account {
+                        Username = c.SenderUsername,
+                        Name = c.Sender.Name,
+                        Status = c.Sender.Status,
+                        ImageUrl = c.Sender.ImageUrl
+                    },
+                    LastMessage = new Message {
+                        Id = c.LastMessageId,
+                        Text = c.LastMessage.Text,
+                        DateSent = c.LastMessage.DateSent
+                    }
+                });
+            });
 
-                if (c.SenderUsername == User.Identity.Name)
-                    rec =  Context.Account.Find(c.ReceiverUsername);
-                else
-                    rec =  Context.Account.Find(c.SenderUsername);
-
-                c.Receiver = new Account
-                { 
-                    Username = rec.Username,
-                    Name = rec.Name,
-                    ImageUrl = rec.ImageUrl
-                };
-            }
-
-            return Ok(chats);
+            return Ok(chatList);
         }
 
         /// <summary>
@@ -59,7 +74,7 @@ namespace MessageHandlingApi.Controllers
         [HttpPost]
         public void Create(string username, int groupId)
         {
-            Chat newChat = new Chat
+            /*Chat newChat = new Chat
             {
                 LastText = "",
                 LastMessageDate = DateTime.Now,
@@ -73,11 +88,10 @@ namespace MessageHandlingApi.Controllers
             }
             else
             {
-                newChat.IsGroup = false;
                 newChat.ReceiverUsername = username;
             }
 
-            Context.Chat.Add(newChat);
+            Context.Chat.Add(newChat);*/
             Context.SaveChanges();
         }
     }

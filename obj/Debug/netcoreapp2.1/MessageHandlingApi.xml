@@ -56,7 +56,7 @@
         </member>
         <member name="M:MessageHandlingApi.Controllers.GroupController.AccountGroups">
             <summary>
-            Get all groups created by the authenticated account
+            Get all groups joined by the authenticated account
             </summary>
         </member>
         <member name="M:MessageHandlingApi.Controllers.GroupController.GroupInfo(System.Int32)">
