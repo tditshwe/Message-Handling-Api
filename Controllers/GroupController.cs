@@ -22,16 +22,27 @@ namespace MessageHandlingApi.Controllers
         private readonly MessageContext Context = new MessageContext();
 
         /// <summary>
-        /// Get a list of all groups
+        /// Get a list of group participants
         /// </summary>
 
-        // GET messageHandlingApi/Group/list
-        [HttpGet ("list")]
-        public IActionResult GroupList()
+        // GET messageHandlingApi/Group/{id}}
+        [HttpGet ("participants/{id}")]
+        public IActionResult Participants(int id)
         {
             try
             {
-                return Ok (Context.Groups.Where(g => g.Id != 1));
+                var group = Context.Groups.Find(id);
+                var groupAccounts = group.GroupAccounts.ToList();
+                List<Account> participants = new List<Account>();
+
+                groupAccounts.ForEach(g => participants.Add(new Account {
+                    Username = g.AccountUsername,
+                    Name = g.Account.Name,
+                    Status = g.Account.Status,
+                    ImageUrl = g.Account.ImageUrl
+                }));
+
+                return Ok (participants);
             }
             catch (Exception e)
             {
@@ -50,9 +61,16 @@ namespace MessageHandlingApi.Controllers
             try
             {
                 var acc = Context.Account.Find(User.Identity.Name);
-                var accountGroups = acc.AccountGroups;
+                var accountGroups = acc.AccountGroups.ToList();
+                List<Groups> groups = new List<Groups>();
 
-                return Ok (accountGroups);
+                accountGroups.ForEach(g => groups.Add(new Groups {
+                    Id = g.GroupId,
+                    Name = g.Group.Name,
+                    CreatorUsername = g.Account.Username
+                }));
+
+                return Ok (groups);
             }
             catch (Exception e)
             {
@@ -107,7 +125,7 @@ namespace MessageHandlingApi.Controllers
 
         // POST messageHandlingApi/Group/{name}
         [HttpPost ("{name}")]
-        public IActionResult Create(string name, List<Account> participants)
+        public IActionResult Create(string name, [FromBody] List<Account> participants)
         {
             try
             {
@@ -120,16 +138,17 @@ namespace MessageHandlingApi.Controllers
                 };
 
                 account.Role = "GroupAdmin";
+                newGroup.GroupAccounts = new List<AccountGroup>();
 
-                if (participants.Count > 0)
-                {
-                    newGroup.GroupAccounts = new List<AccountGroup>();
+                newGroup.GroupAccounts.Add(new AccountGroup {
+                    Group = newGroup,
+                    Account = account
+                });
 
-                    participants.ForEach(p => newGroup.GroupAccounts.Add(new AccountGroup {
-                        Group = newGroup,
-                        Account = p
-                    }));
-                }
+                participants.ForEach(p => newGroup.GroupAccounts.Add(new AccountGroup {
+                    Group = newGroup,
+                    Account = p
+                }));
 
                 Context.Account.Update(account);
                 Context.Groups.Add(newGroup);

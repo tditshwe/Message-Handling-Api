@@ -49,9 +49,9 @@
             Create new chat
             </summary>
         </member>
-        <member name="M:MessageHandlingApi.Controllers.GroupController.GroupList">
+        <member name="M:MessageHandlingApi.Controllers.GroupController.Participants(System.Int32)">
             <summary>
-            Get a list of all groups
+            Get a list of group participants
             </summary>
         </member>
         <member name="M:MessageHandlingApi.Controllers.GroupController.AccountGroups">
@@ -64,7 +64,7 @@
             Get group info
             </summary>
         </member>
-        <member name="M:MessageHandlingApi.Controllers.GroupController.Create(System.String)">
+        <member name="M:MessageHandlingApi.Controllers.GroupController.Create(System.String,System.Collections.Generic.List{MessageHandlingApi.Models.Account})">
             <summary>
             Create new group
             </summary>
