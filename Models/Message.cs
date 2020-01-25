@@ -23,5 +23,6 @@ namespace MessageHandlingApi.Models
         public virtual Account Sender { get; set; }
         public virtual Chat Chat { get; set; }
         public virtual IList<AccountMessage> AccountMessages { get; set; }
+        public virtual IList<GroupMessage> GroupMessages { get; set; }
     }
 }

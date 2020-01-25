@@ -1,4 +1,4 @@
-CREATE TABLE Account(
+/*CREATE TABLE Account(
 	username varchar(20) not null PRIMARY KEY,
 	name varchar(50) not null,
 	password varchar(200) not null,
@@ -26,8 +26,8 @@ Create TABLE AccountMessage
 	messageid int not null foreign key references Message(id)
 )
 
-/*ALTER TABLE Account
-Add name varchar(100) not null default 'User 1';*/
+ALTER TABLE Account
+Add name varchar(100) not null default 'User 1';
 
 CREATE TABLE Chat(
 	id int not null IDENTITY(1,1) PRIMARY KEY,
@@ -40,4 +40,10 @@ Create TABLE AccountGroup
 (
 	accountusername varchar(20) not null foreign key references Account(username),
 	groupid int not null foreign key references Groups(id)
+);*/
+
+CREATE TABLE GroupMessage
+(
+	groupid int not null foreign key references Groups(id),
+	messageid int not null foreign key references Message(id)
 );

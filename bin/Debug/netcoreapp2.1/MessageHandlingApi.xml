@@ -69,12 +69,12 @@
             Create new group
             </summary>
         </member>
-        <member name="M:MessageHandlingApi.Controllers.GroupController.AddMember(System.Int32,System.String)">
+        <member name="M:MessageHandlingApi.Controllers.GroupController.AddMember(MessageHandlingApi.Models.AccountGroup)">
             <summary>
             Add new member to the group
             </summary>
         </member>
-        <member name="M:MessageHandlingApi.Controllers.GroupController.Edit(System.Int32,System.String)">
+        <member name="M:MessageHandlingApi.Controllers.GroupController.Edit(MessageHandlingApi.Models.Groups)">
             <summary>
             Edit group
             </summary>

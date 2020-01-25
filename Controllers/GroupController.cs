@@ -67,7 +67,7 @@ namespace MessageHandlingApi.Controllers
                 accountGroups.ForEach(g => groups.Add(new Groups {
                     Id = g.GroupId,
                     Name = g.Group.Name,
-                    CreatorUsername = g.Account.Username
+                    CreatorUsername = g.Group.CreatorUsername
                 }));
 
                 return Ok (groups);
@@ -147,7 +147,7 @@ namespace MessageHandlingApi.Controllers
 
                 participants.ForEach(p => newGroup.GroupAccounts.Add(new AccountGroup {
                     Group = newGroup,
-                    Account = p
+                    Account = Context.Account.Find(p.Username)
                 }));
 
                 Context.Account.Update(account);
@@ -167,16 +167,16 @@ namespace MessageHandlingApi.Controllers
         /// </summary>
 
         // POST messageHandlingApi/Group/{groupId}/{username}
-        [Authorize(Roles = "GroupAdmin")]
-        [HttpPost ("{groupId}/{contact}")]
-        public IActionResult AddMember(int groupId, string contact)
+        //[Authorize(Roles = "GroupAdmin")]
+        [HttpPost]
+        public IActionResult AddMember(AccountGroup ag)
         {
             try
             {
-                var group = Context.Groups.Find(groupId);
+                var group = Context.Groups.Find(ag.GroupId);
                 var creator = Context.Account.Find(group.CreatorUsername);
 
-                if (contact == User.Identity.Name)
+                if (ag.AccountUsername == User.Identity.Name)
                     return BadRequest("You can't add yourself to the group");
 
                 if (group == null)
@@ -185,14 +185,8 @@ namespace MessageHandlingApi.Controllers
                 if (group.CreatorUsername != User.Identity.Name)
                     return BadRequest(new { message = "You are not the creator of this group" });
 
-                if (Context.Account.Find(contact) == null)
-                    return BadRequest(new { message = "Invalid contact, cannot be added to group" });
-                
-                AccountGroup ag = new AccountGroup
-                {
-                    AccountUsername = contact,
-                    GroupId = groupId
-                };
+                if (Context.Account.Find(ag.AccountUsername) == null)
+                    return BadRequest(new { message = "Invalid contact, cannot be added to group" });          
                 
                 Context.AccountGroup.Add(ag);
                 Context.SaveChanges();
@@ -208,14 +202,14 @@ namespace MessageHandlingApi.Controllers
         /// <summary>
         /// Edit group
         /// </summary>
-        // PUT messageHandlingApi/Group/{name}
-        [Authorize(Roles = "GroupAdmin")]
-        [HttpPut ("{id}/name")]
-        public IActionResult Edit(int id, string name)
+        // PUT messageHandlingApi/Group/
+        //[Authorize(Roles = "GroupAdmin")]
+        [HttpPut]
+        public IActionResult Edit(Groups grp)
         {
             try
             {
-                var group = Context.Groups.Find(id);
+                var group = Context.Groups.Find(grp.Id);
 
                 if (group == null)
                     return BadRequest(new { message = "Invalid group" });
@@ -223,7 +217,7 @@ namespace MessageHandlingApi.Controllers
                 if (group.CreatorUsername != User.Identity.Name)
                     return BadRequest(new { message = "You are not the creator of this group" });
 
-                group.Name = name;
+                group.Name = grp.Name;
                 Context.Groups.Update(group);
                 Context.SaveChanges();
 

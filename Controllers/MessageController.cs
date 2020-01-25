@@ -35,18 +35,6 @@ namespace MessageHandlingApi.Controllers
                 if (contact == User.Identity.Name)
                     return BadRequest("You can't chat with yourself");
 
-                /*var chat = Context.Message.Where(m => (m.SenderUsername == username) || (m.SenderUsername == contact)).ToList();
-                List<MessageRetrieve> chatList = new List<MessageRetrieve>();
-
-                chat.ForEach(
-                    c => chatList.Add(new MessageRetrieve
-                    {
-                        Sender = c.SenderUsername,
-                        SenderName = Context.Account.Find(c.SenderUsername).Name,
-                        DateSent = c.DateSent,
-                        Text = c.Text
-                    })
-                );*/
                 List<Message> chatMessages = new List<Message>();
 
                 var contactMessages = Context.Account.Find(contact)
@@ -88,20 +76,23 @@ namespace MessageHandlingApi.Controllers
             try
             {
                 var username = User.Identity.Name;
-                var chat = Context.Message.Where(m => m.SenderUsername == username).ToList();
-                List<MessageRetrieve> chatList = new List<MessageRetrieve>();
+                var groupMsg = Context.Groups.Find(groupId).GroupMessages.ToList();
+                List<Message> msgList = new List<Message>();
 
-                chat.ForEach(
-                    c => chatList.Add(new MessageRetrieve
+                groupMsg.ForEach(
+                    m => msgList.Add(new Message
                     {
-                        Sender = c.SenderUsername,
-                        SenderName = Context.Account.Find(c.SenderUsername).Name,
-                        DateSent = c.DateSent,
-                        Text = c.Text
+                        Id = m.Message.Id,
+                        Text = m.Message.Text,
+                        DateSent = m.Message.DateSent,
+                        SenderUsername = m.Message.SenderUsername,
+                        Sender = new Account {
+                            Name = m.Message.Sender.Name
+                        }
                     })
                 );
 
-                return Ok (chatList);
+                return Ok (msgList);
             }
             catch (Exception e)
             {
@@ -185,17 +176,8 @@ namespace MessageHandlingApi.Controllers
                 var account = Context.Account.Find(User.Identity.Name);
                 var accGroup = Context.AccountGroup.Where(g => g.GroupId == groupId).ToList();
 
-                var link = new AccountGroup
-                {
-                    AccountUsername = User.Identity.Name,
-                    GroupId = groupId
-                };
-
                 if (group == null)
                     return BadRequest(new { message = "Invalid group" });
-
-                if (!accGroup.Contains(link))
-                    return BadRequest(new { message = "You are not the member of this group" });
 
                 Message msg = new Message
                 {
@@ -207,7 +189,19 @@ namespace MessageHandlingApi.Controllers
                 Context.Message.Add(msg);
                 Context.SaveChanges();
 
-                return Ok("Created");
+                var link = new GroupMessage
+                {
+                    GroupId = groupId,
+                    MessageId = msg.Id
+                };
+
+                //if (!accGroup.Contains(link))
+                    //return BadRequest(new { message = "You are not the member of this group" });
+
+                Context.GroupMessage.Add(link);
+                Context.SaveChanges();
+
+                return Ok();
             }
             catch (Exception e)
             {

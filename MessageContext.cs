@@ -14,6 +14,7 @@ namespace MessageHandlingApi
         public DbSet<AccountGroup> AccountGroup  { get; set; }
         public DbSet<Chat> Chat { get; set; }
         public DbSet<AccountMessage> AccountMessage { get; set; }
+        public DbSet<GroupMessage> GroupMessage { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,7 +55,19 @@ namespace MessageHandlingApi
             modelBuilder.Entity<AccountGroup>()
                 .HasOne<Groups>(sc => sc.Group)
                 .WithMany(a => a.GroupAccounts)
-                .HasForeignKey(sc => sc.GroupId);          
+                .HasForeignKey(sc => sc.GroupId);
+
+            modelBuilder.Entity<GroupMessage>().HasKey(sc => new { sc.GroupId, sc.MessageId });
+
+            modelBuilder.Entity<GroupMessage>()
+                .HasOne<Groups>(sc => sc.Group)
+                .WithMany(a => a.GroupMessages)
+                .HasForeignKey(sc => sc.GroupId);
+
+            modelBuilder.Entity<GroupMessage>()
+                .HasOne<Message>(sc => sc.Message)
+                .WithMany(a => a.GroupMessages)
+                .HasForeignKey(sc => sc.MessageId);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
