@@ -79,6 +79,11 @@
             Edit group
             </summary>
         </member>
+        <member name="M:MessageHandlingApi.Controllers.GroupController.removeParticipant(System.Int32,System.String)">
+            <summary>
+            Remove a group participant
+            </summary>
+        </member>
         <member name="M:MessageHandlingApi.Controllers.GroupController.Delete(System.Int32)">
             <summary>
             Delete a group

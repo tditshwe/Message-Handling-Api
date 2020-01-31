@@ -230,6 +230,27 @@ namespace MessageHandlingApi.Controllers
         }
 
         /// <summary>
+        /// Remove a group participant
+        /// </summary>
+        // POST messageHandlingApi/Group/{id}
+        [Authorize(Roles = "GroupAdmin")]
+        [HttpPost ("{id}/{username}")]
+        public IActionResult removeParticipant(int id, string username)
+        {
+            var groupParticipant = Context.AccountGroup.Where(gp => gp.GroupId == id && gp.AccountUsername == username).First();
+            var Group = Context.Groups.Find(id);
+
+            if (Group.CreatorUsername !=  User.Identity.Name)
+                return BadRequest(new { message = "You need to be the creator of this group" });
+            if (Group.CreatorUsername == username)
+                return BadRequest(new { message = "Not allowed!" });
+
+            Context.AccountGroup.Remove(groupParticipant);
+            Context.SaveChanges();
+            return Ok();
+        }
+
+        /// <summary>
         /// Delete a group
         /// </summary>
         // DELETE messageHandlingApi/Group/{id}
